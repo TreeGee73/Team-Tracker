@@ -179,3 +179,47 @@ async function createEmployee() {
 
   init();
 }
+
+// Function to create a new role
+async function createRole() {
+  // Get list of departments to list for assignment of role to department
+  let deptQuery = "SELECT name, id FROM departments";
+  const deptData = connection.query(deptQuery);
+
+  // Request fo new role name, salary, and department to be entered by the user
+  const newRole = await inquirer.prompt([
+    {
+      name: "role",
+      type: "input",
+      message: "Please enter a new role name.",
+    },
+    {
+      name: "salary",
+      type: "input",
+      message: "Please enter the salary for this role.",
+    },
+    {
+      name: "dept",
+      type: "list",
+      message: "Please select a department to assign this role.",
+      choices: deptData.map(function (department) {
+        return {
+          name: department.name,
+          value: department.id,
+        };
+      }),
+    },
+  ]);
+
+  // Inserts new role into roles table
+  const addRoleQuery =
+    "INSERT INTO roles (title, salary, department_id) VALUES (?,?,?)";
+  const addRoleData = await connection.query(addRoleQuery, [
+    role.title,
+    role.salary,
+    role.department,
+  ]);
+  console.log("New Role Added!");
+
+  init();
+}
