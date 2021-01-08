@@ -113,3 +113,69 @@ async function viewDepartments() {
   const data = await connection.query(query);
   console.table(data);
 }
+
+// Function to create a new employee
+async function createEmployee() {
+  // Get a list of roles to list for assignment of employee role
+  let roleQuery = "SELECT title, id FROM roles";
+  const roleData = connection.query(roleQuery);
+
+  let employeeOptions =
+    "SELECT id, CONCAT(first_name, ' ', last_name) AS name, id FROM employees";
+  const employeeData = connection.query(employeeOptions);
+
+  const employee = await inquirer.prompt([
+    {
+      name: "first_name",
+      type: "input",
+      message: "Please enter the new employee's first name.",
+    },
+    {
+      name: "last_name",
+      type: "input",
+      message: "Please enter the new employee's last name.",
+    },
+    {
+      name: "role",
+      type: "list",
+      message: "Please select the new employee's role.",
+      choices: rolesData.map(function (role) {
+        return {
+          name: role.title,
+          value: role.id,
+        };
+      }),
+    },
+    {
+      name: "manager",
+      type: "list",
+      message: "Does this employee have a manager?",
+      choices: ["Yes", "No"],
+    },
+    {
+      name: "reports",
+      type: "list",
+      message: "Please select the new employee's manager.",
+      choices: rolesData.map(function (emp) {
+        return {
+          name: emp.name,
+          value: emp.id,
+        };
+      }),
+      when: (answers) => answers.manager === "Yes",
+    },
+  ]);
+
+  // Inserts new employee into employee table
+  const addEmployeeQuery =
+    "INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)";
+  const addEmployeeData = await connection.query(addEmployeeQuery, [
+    employee.first_name,
+    employee.last_name,
+    employee.role,
+    employee.manager,
+  ]);
+  console.log("New Employee Added!");
+
+  init();
+}
