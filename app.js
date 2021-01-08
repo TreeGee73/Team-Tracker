@@ -92,3 +92,24 @@ async function init() {
       break;
   }
 }
+
+// A query which returns all data for all employees
+async function viewEmployees() {
+  const empQuery = "SELECT * FROM employees";
+  const empData = await connection.query(empQuery);
+  console.table(empData);
+}
+
+// A query which returns all data for all roles
+async function viewRoles() {
+  const query = "SELECT * FROM roles";
+  const data = await connection.query(query);
+  console.table(data);
+}
+
+// A query which returns all data for all departments
+async function viewDepartments() {
+  const query = "SELECT * FROM departments";
+  const data = await connection.query(query);
+  console.table(data);
+}
