@@ -3,34 +3,9 @@ const inquirer = require("inquirer");
 const mysql = require("mysql");
 const logo = require("asciiart-logo");
 
-// Variables
-const longText =
-  "Employee management that is totally NOT creepy but IS incredibly reliable and secure!";
-
 // Functions to display the logo and start the application
 logoArt();
 init();
-
-// Function to create opening logo
-function logoArt() {
-  console.log(
-    logo({
-      name: "Gotta Track'Em All!",
-      font: "Stampatello",
-      lineChars: 20,
-      padding: 5,
-      margin: 5,
-      borderColor: "grey",
-      logoColor: "bold-red",
-      textColor: "grey",
-    })
-      .emptyLine()
-      .right("version 1.0.0")
-      .emptyLine()
-      .center(longText)
-      .render()
-  );
-}
 
 // Function to start tracking.
 // Prompts user to select an action and then executes the appropriate function for that action.
@@ -55,43 +30,67 @@ async function init() {
     ],
   });
 
+  // Switch case is used to execute the appropriate function based on the users selection
   switch (action) {
     case "View Existing Employees":
       viewEmployees();
+      init();
       break;
+
     case "View Existing Roles":
       viewRoles();
+      init();
       break;
+
     case "View Existing Departments":
       viewDepartments();
+      init();
       break;
+
     case "Add New Employee":
       createEmployee();
+      init();
       break;
+
     case "Add New Role":
       createRole();
+      init();
       break;
+
     case "Add New Department":
       createDepartment();
+      init();
       break;
+
     case "Update Employee Role":
       updateEmployee();
+      init();
       break;
+
     case "Update Role Salary":
       updateRole();
+      init();
       break;
+
     case "Remove Employee":
       removeEmployee();
+      init();
       break;
+
     case "Remove Role":
       removeRole();
+      init();
       break;
+
     case "Remove Department":
       removeDepartment();
+      init();
       break;
+
     case "Exit":
       process.exit(0);
       break;
+
     default:
       break;
   }
@@ -99,19 +98,24 @@ async function init() {
 
 // A query which returns all data for all employees
 async function viewEmployees() {
-  const empData = await connection.query("SELECT * FROM employees");
+  const empQuery =
+    "SELECT employees.first_name, employees.last_name, roles.title, roles.salary, departments.name, IFNULL(CONCAT(manager.first_name, ' ', manager.last_name),'N/A') AS 'Manager' FROM employees LEFT JOIN employees manager ON manager.id = employees.manager_id INNER JOIN roles ON employees.role_id = roles.id INNER JOIN departments ON roles.department_id = departments.id;";
+  const empData = await connection.query(empQuery);
   console.table(empData);
 }
 
 // A query which returns all data for all roles
 async function viewRoles() {
-  const roleData = await connection.query("SELECT * FROM roles");
+  const roleQuery =
+    "SELECT title AS Title, salary AS Salary, name AS Department FROM roles, INNER JOIN departments, ON roles.department_id = departments.id";
+  const roleData = await connection.query(roleQuery);
   console.table(roleData);
 }
 
 // A query which returns all data for all departments
 async function viewDepartments() {
-  const departmentData = await connection.query("SELECT * FROM departments");
+  const departmentQuery = "SELECT name AS Name FROM departments";
+  const departmentData = await connection.query(departmentQuery);
   console.table(departmentData);
 }
 
@@ -139,12 +143,13 @@ async function createEmployee() {
       name: "role",
       type: "list",
       message: "Please select the new employee's role.",
-      choices: rolesData.map(function (role) {
-        return {
-          name: role.title,
-          value: role.id,
-        };
-      }),
+      choices: roleData,
+      // choices: rolesData.map(function (role) {
+      //   return {
+      //     name: role.title,
+      //     value: role.id,
+      //   };
+      // }),
     },
     {
       name: "manager",
@@ -156,12 +161,11 @@ async function createEmployee() {
       name: "reports",
       type: "list",
       message: "Please select the new employee's manager.",
-      choices: rolesData.map(function (emp) {
-        return {
-          name: emp.name,
-          value: emp.id,
-        };
-      }),
+      choices: employeeData,
+      // choices: employeeData.map((emp) => ({
+      //   name: emp.name,
+      //   value: emp.id,
+      // })),
       when: (answers) => answers.manager === "Yes",
     },
   ]);
@@ -171,9 +175,9 @@ async function createEmployee() {
     "INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)",
     [employee.first_name, employee.last_name, employee.role, employee.manager]
   );
-  console.log("New Employee Added!");
+  console.log("New Employee Added!\n");
 
-  init();
+  // init();
 }
 
 // Function to create a new role
@@ -197,12 +201,11 @@ async function createRole() {
       name: "dept",
       type: "list",
       message: "Please select a department to assign this role.",
-      choices: deptData.map(function (department) {
-        return {
-          name: department.name,
-          value: department.id,
-        };
-      }),
+      choices: deptData,
+      // choices: deptData.map((department) => ({
+      //   name: department.name,
+      //   value: department.id,
+      // })),
     },
   ]);
 
@@ -211,9 +214,9 @@ async function createRole() {
     "INSERT INTO roles (title, salary, department_id) VALUES (?,?,?)",
     [role.title, role.salary, role.department]
   );
-  console.log("New Role Added!");
+  console.log("New Role Added!\n");
 
-  init();
+  // init();
 }
 
 // Function to create a new department
@@ -231,9 +234,9 @@ async function createDepartment() {
   const addRoleData = await connection.query("INSERT INTO departments SET ?", [
     department.name,
   ]);
-  console.log("New Department Added!");
+  console.log("New Department Added!\n");
 
-  init();
+  // init();
 }
 
 // function to update an employee
@@ -250,23 +253,21 @@ async function updateEmployee() {
       name: "empName",
       type: "list",
       message: "Which employee would you like to modify?",
-      choices: getEmployees.map(function (employee) {
-        return {
-          name: employee.name,
-          value: employee.id,
-        };
-      }),
+      choices: getEmployees,
+      // choices: getEmployees.map((employee) => ({
+      //   name: employee.name,
+      //   value: employee.id,
+      // })),
     },
     {
       name: "empRole",
       type: "list",
       message: "What is this employee's new role?",
-      choices: getRoles.map(function (role) {
-        return {
-          name: role.title,
-          value: role.id,
-        };
-      }),
+      choices: getRoles,
+      // choices: getRoles.map((role) => ({
+      //   name: role.title,
+      //   value: role.id,
+      // })),
     },
   ]);
 
@@ -275,9 +276,9 @@ async function updateEmployee() {
     "UPDATE employees SET role_id = ? WHERE id = ?",
     [empUpdate.empRole, empUpdate.empName]
   );
-  console.log("Employee has been Updated!");
+  console.log("Employee has been Updated!\n");
 
-  init();
+  // init();
 }
 
 // function to update an role
@@ -291,12 +292,11 @@ async function updateRole() {
       name: "roleName",
       type: "list",
       message: "Which role would you like to modify?",
-      choices: existingRoles.map(function (role) {
-        return {
-          name: role.title,
-          value: role.id,
-        };
-      }),
+      choices: existingRoles,
+      // choices: existingRoles.map((role) => ({
+      //   name: role.title,
+      //   value: role.id,
+      // })),
     },
     {
       name: "roleSalary",
@@ -310,9 +310,9 @@ async function updateRole() {
     "UPDATE roles SET salary = ? WHERE id = ?",
     [roleUpdate.roleSalary]
   );
-  console.log("Salary has been Updated!");
+  console.log("Salary has been Updated!\n");
 
-  init();
+  // init();
 }
 
 // Function to remove an Employee
@@ -328,12 +328,11 @@ async function removeEmployee() {
       name: "empToRemove",
       type: "list",
       message: "Which employee would you like to remove?",
-      choices: employeeList.map(function (employee) {
-        return {
-          name: employee.name,
-          value: employee.id,
-        };
-      }),
+      choices: employeeList,
+      // choices: employeeList.map((employee) => ({
+      //   name: employee.name,
+      //   value: employee.id,
+      // })),
     },
   ]);
 
@@ -341,9 +340,9 @@ async function removeEmployee() {
   const removeEmployeeData = await connection.query(
     "DELETE FROM employees WHERE id = ?"
   );
-  console.log("Employee has been Deleted!");
+  console.log("Employee has been Deleted!\n");
 
-  init();
+  // init();
 }
 
 // Function to remove an Role
@@ -357,12 +356,11 @@ async function removeRole() {
       name: "roleToRemove",
       type: "list",
       message: "Which role would you like to remove?",
-      choices: roleList.map(function (role) {
-        return {
-          name: role.title,
-          value: role.id,
-        };
-      }),
+      choices: roleList,
+      // choices: roleList.map((role) => ({
+      //   name: role.title,
+      //   value: role.id,
+      // })),
     },
   ]);
 
@@ -370,9 +368,9 @@ async function removeRole() {
   const removeRoleData = await connection.query(
     "DELETE FROM roles WHERE id = ?"
   );
-  console.log("Role has been Deleted!");
+  console.log("Role has been Deleted!\n");
 
-  init();
+  // init();
 }
 
 // Function to remove an Department
@@ -388,12 +386,11 @@ async function removeDepartment() {
       name: "deptToRemove",
       type: "list",
       message: "Which department would you like to remove?",
-      choices: departmentsList.map(function (dept) {
-        return {
-          name: dept.name,
-          value: dept.id,
-        };
-      }),
+      choices: departmentsList,
+      // choices: departmentsList.map((dept) => ({
+      //   name: dept.name,
+      //   value: dept.id,
+      // })),
     },
   ]);
 
@@ -401,7 +398,30 @@ async function removeDepartment() {
   const removeDepartmentData = await connection.query(
     "DELETE FROM departments WHERE id = ?"
   );
-  console.log("Department has been Deleted!");
+  console.log("Department has been Deleted!\n");
 
-  init();
+  // init();
+}
+
+// Function to create opening logo
+function logoArt() {
+  console.log(
+    logo({
+      name: "Gotta Track'Em All!",
+      font: "Stampatello",
+      lineChars: 20,
+      padding: 5,
+      margin: 5,
+      borderColor: "grey",
+      logoColor: "bold-red",
+      textColor: "grey",
+    })
+      .emptyLine()
+      .right("version 1.0.0")
+      .emptyLine()
+      .center(
+        "Employee management that is totally NOT creepy but IS incredibly reliable and secure!"
+      )
+      .render()
+  );
 }
