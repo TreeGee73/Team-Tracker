@@ -33,7 +33,7 @@ This app utilizes the following technologies:
 ---
 
   ## Installation
-Simply use npm i to install.
+Simply use npm i to install. Node app.js to run.
 
 ---
 
@@ -44,10 +44,12 @@ The applications are covered under a MIT license.
 
   ## Images / Demo Video
   <!-- A video demonstration of this application can be found [here](https://youtu.be/8QQGD-kPY20).
-  Click the image to launch the video.
+  Click the image to launch the video. -->
 
-  [![Screeshot](Screenshot.jpg)](https://www.youtube.com/watch?v=8QQGD-kPY20 "Demo") -->
-  TBA
+  <!-- [![Screeshot](Screenshot.jpg)](https://www.youtube.com/watch?v=8QQGD-kPY20 "Demo") -->
+
+  TBA <br />
+<img src="Screenshot.jpg" />
 
 ---
 
