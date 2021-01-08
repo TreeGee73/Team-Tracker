@@ -48,8 +48,10 @@ async function init() {
       "Add New Department",
       "Modify Existing Employee",
       "Modify Existing Role",
+      "Modify Existing Department",
       "Remove Existing Employee",
       "Remove Existing Role",
+      "Remove Existing Department",
       "Exit",
     ],
   });
@@ -79,11 +81,18 @@ async function init() {
     case "Modify Existing Role":
       updateRole();
       break;
+      break;
+    case "Modify Existing Department":
+      updateDepartment();
+      break;
     case "Remove Existing Employee":
       removeEmployee();
       break;
     case "Remove Existing Role":
       removeRole();
+      break;
+    case "Remove Existing Department":
+      removeDepartment();
       break;
     case "Exit":
       process.exit(0);
