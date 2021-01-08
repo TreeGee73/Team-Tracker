@@ -251,24 +251,24 @@ async function updateEmployee() {
       type: "list",
       message: "Which employee would you like to modify?",
       choices: getEmployees.map(function (employee) {
-          return ({
-            name: employee.name,
-            value: employee.id,
-          });
-        }),
+        return {
+          name: employee.name,
+          value: employee.id,
+        };
+      }),
     },
     {
       name: "empRole",
       type: "list",
       message: "What is this employee's new role?",
       choices: getRoles.map(function (role) {
-          return ({
-            name: role.title,
-            value: role.id,
-          });
-        }),
+        return {
+          name: role.title,
+          value: role.id,
+        };
+      }),
     },
-  ])
+  ]);
 
   // Updates employee's new role
   const updateEmployeeData = await connection.query(
@@ -292,18 +292,18 @@ async function updateRole() {
       type: "list",
       message: "Which role would you like to modify?",
       choices: existingRoles.map(function (role) {
-          return ({
-            name: role.title,
-            value: role.id,
-          });
-        }),
+        return {
+          name: role.title,
+          value: role.id,
+        };
+      }),
     },
     {
       name: "roleSalary",
       type: "input",
       message: "What is this role's new salary?",
     },
-  ])
+  ]);
 
   // Updates role's salary
   const updateRoleData = await connection.query(
@@ -311,6 +311,97 @@ async function updateRole() {
     [roleUpdate.roleSalary]
   );
   console.log("Salary has been Updated!");
+
+  init();
+}
+
+// Function to remove an Employee
+async function removeEmployee() {
+  // Query to pull list of all employees on the employee table
+  const employeeList = await connection.query(
+    "SELECT CONCAT(first_name, ' ', last_name) AS name, id FROM employees"
+  );
+
+  // Prompt to user to select which employee to remove
+  const empRemove = await inquirer.prompt([
+    {
+      name: "empToRemove",
+      type: "list",
+      message: "Which employee would you like to remove?",
+      choices: employeeList.map(function (employee) {
+        return {
+          name: employee.name,
+          value: employee.id,
+        };
+      }),
+    },
+  ]);
+
+  // Removes selected employee
+  const removeEmployeeData = await connection.query(
+    "DELETE FROM employees WHERE id = ?"
+  );
+  console.log("Employee has been Deleted!");
+
+  init();
+}
+
+// Function to remove an Role
+async function removeRole() {
+  // Query to pull list of all roles on the role table
+  const roleList = await connection.query("SELECT title, id FROM roles");
+
+  // Prompt to user to select which role to remove
+  const roleRemove = await inquirer.prompt([
+    {
+      name: "roleToRemove",
+      type: "list",
+      message: "Which role would you like to remove?",
+      choices: roleList.map(function (role) {
+        return {
+          name: role.title,
+          value: role.id,
+        };
+      }),
+    },
+  ]);
+
+  // Removes selected role
+  const removeRoleData = await connection.query(
+    "DELETE FROM roles WHERE id = ?"
+  );
+  console.log("Role has been Deleted!");
+
+  init();
+}
+
+// Function to remove an Department
+async function removeDepartment() {
+  // Query to pull list of all departments on the departments table
+  const departmentsList = await connection.query(
+    "SELECT name, id FROM departments"
+  );
+
+  // Prompt to user to select which role to remove
+  const departmentRemove = await inquirer.prompt([
+    {
+      name: "deptToRemove",
+      type: "list",
+      message: "Which department would you like to remove?",
+      choices: departmentsList.map(function (dept) {
+        return {
+          name: dept.name,
+          value: dept.id,
+        };
+      }),
+    },
+  ]);
+
+  // Removes selected department
+  const removeDepartmentData = await connection.query(
+    "DELETE FROM departments WHERE id = ?"
+  );
+  console.log("Department has been Deleted!");
 
   init();
 }
