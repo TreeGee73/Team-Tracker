@@ -46,12 +46,11 @@ async function init() {
       "Add New Employee",
       "Add New Role",
       "Add New Department",
-      "Modify Existing Employee",
-      "Modify Existing Role",
-      "Modify Existing Department",
-      "Remove Existing Employee",
-      "Remove Existing Role",
-      "Remove Existing Department",
+      "Update Employee Role",
+      "Update Role Salary",
+      "Remove Employee",
+      "Remove Role",
+      "Remove Department",
       "Exit",
     ],
   });
@@ -75,23 +74,19 @@ async function init() {
     case "Add New Department":
       createDepartment();
       break;
-    case "Modify Existing Employee":
+    case "Update Employee Role":
       updateEmployee();
       break;
-    case "Modify Existing Role":
+    case "Update Role Salary":
       updateRole();
       break;
-      break;
-    case "Modify Existing Department":
-      updateDepartment();
-      break;
-    case "Remove Existing Employee":
+    case "Remove Employee":
       removeEmployee();
       break;
-    case "Remove Existing Role":
+    case "Remove Role":
       removeRole();
       break;
-    case "Remove Existing Department":
+    case "Remove Department":
       removeDepartment();
       break;
     case "Exit":
@@ -104,35 +99,31 @@ async function init() {
 
 // A query which returns all data for all employees
 async function viewEmployees() {
-  const empQuery = "SELECT * FROM employees";
-  const empData = await connection.query(empQuery);
+  const empData = await connection.query("SELECT * FROM employees");
   console.table(empData);
 }
 
 // A query which returns all data for all roles
 async function viewRoles() {
-  const query = "SELECT * FROM roles";
-  const data = await connection.query(query);
-  console.table(data);
+  const roleData = await connection.query("SELECT * FROM roles");
+  console.table(roleData);
 }
 
 // A query which returns all data for all departments
 async function viewDepartments() {
-  const query = "SELECT * FROM departments";
-  const data = await connection.query(query);
-  console.table(data);
+  const departmentData = await connection.query("SELECT * FROM departments");
+  console.table(departmentData);
 }
 
 // Function to create a new employee
 async function createEmployee() {
   // Get a list of roles to list for assignment of employee role
-  let roleQuery = "SELECT title, id FROM roles";
-  const roleData = connection.query(roleQuery);
+  const roleData = connection.query("SELECT title, id FROM roles");
+  const employeeData = connection.query(
+    "SELECT id, CONCAT(first_name, ' ', last_name) AS name, id FROM employees"
+  );
 
-  let employeeOptions =
-    "SELECT id, CONCAT(first_name, ' ', last_name) AS name, id FROM employees";
-  const employeeData = connection.query(employeeOptions);
-
+  // Prompt to user for new employee data
   const employee = await inquirer.prompt([
     {
       name: "first_name",
@@ -176,14 +167,10 @@ async function createEmployee() {
   ]);
 
   // Inserts new employee into employee table
-  const addEmployeeQuery =
-    "INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)";
-  const addEmployeeData = await connection.query(addEmployeeQuery, [
-    employee.first_name,
-    employee.last_name,
-    employee.role,
-    employee.manager,
-  ]);
+  const addEmployeeData = await connection.query(
+    "INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)",
+    [employee.first_name, employee.last_name, employee.role, employee.manager]
+  );
   console.log("New Employee Added!");
 
   init();
@@ -192,11 +179,10 @@ async function createEmployee() {
 // Function to create a new role
 async function createRole() {
   // Get list of departments to list for assignment of role to department
-  let deptQuery = "SELECT name, id FROM departments";
-  const deptData = connection.query(deptQuery);
+  const deptData = connection.query("SELECT name, id FROM departments");
 
-  // Request fo new role name, salary, and department to be entered by the user
-  const newRole = await inquirer.prompt([
+  // Request for new role name, salary, and department to be entered by the user
+  const role = await inquirer.prompt([
     {
       name: "role",
       type: "input",
@@ -221,13 +207,10 @@ async function createRole() {
   ]);
 
   // Inserts new role into roles table
-  const addRoleQuery =
-    "INSERT INTO roles (title, salary, department_id) VALUES (?,?,?)";
-  const addRoleData = await connection.query(addRoleQuery, [
-    role.title,
-    role.salary,
-    role.department,
-  ]);
+  const addRoleData = await connection.query(
+    "INSERT INTO roles (title, salary, department_id) VALUES (?,?,?)",
+    [role.title, role.salary, role.department]
+  );
   console.log("New Role Added!");
 
   init();
@@ -236,7 +219,7 @@ async function createRole() {
 // Function to create a new department
 async function createDepartment() {
   // Request for new department name to be entered by user
-  const newDept = await inquirer.prompt([
+  const department = await inquirer.prompt([
     {
       name: "department",
       type: "input",
@@ -245,9 +228,89 @@ async function createDepartment() {
   ]);
 
   // Inserts new department into departments table
-  const newDeptQuery = "INSERT INTO departments SET ?";
-  const addRoleData = await connection.query(newDeptQuery, [dept.name]);
+  const addRoleData = await connection.query("INSERT INTO departments SET ?", [
+    department.name,
+  ]);
   console.log("New Department Added!");
+
+  init();
+}
+
+// function to update an employee
+async function updateEmployee() {
+  // Queries to pull in role and employee table data
+  const getRoles = await connection.query("SELECT title, id FROM roles");
+  const getEmployees = await connection.query(
+    "SELECT CONCAT(first_name, ' ', last_name) AS name, id FROM employees"
+  );
+
+  // Prompts for employee to update
+  const empUpdate = await inquirer.prompt([
+    {
+      name: "empName",
+      type: "list",
+      message: "Which employee would you like to modify?",
+      choices: getEmployees.map(function (employee) {
+          return ({
+            name: employee.name,
+            value: employee.id,
+          });
+        }),
+    },
+    {
+      name: "empRole",
+      type: "list",
+      message: "What is this employee's new role?",
+      choices: getRoles.map(function (role) {
+          return ({
+            name: role.title,
+            value: role.id,
+          });
+        }),
+    },
+  ])
+
+  // Updates employee's new role
+  const updateEmployeeData = await connection.query(
+    "UPDATE employees SET role_id = ? WHERE id = ?",
+    [empUpdate.empRole, empUpdate.empName]
+  );
+  console.log("Employee has been Updated!");
+
+  init();
+}
+
+// function to update an role
+async function updateRole() {
+  // Queries to pull in role and employee table data
+  const existingRoles = await connection.query("SELECT title, id FROM roles");
+
+  // Prompts for role to update
+  const roleUpdate = await inquirer.prompt([
+    {
+      name: "roleName",
+      type: "list",
+      message: "Which role would you like to modify?",
+      choices: existingRoles.map(function (role) {
+          return ({
+            name: role.title,
+            value: role.id,
+          });
+        }),
+    },
+    {
+      name: "roleSalary",
+      type: "input",
+      message: "What is this role's new salary?",
+    },
+  ])
+
+  // Updates role's salary
+  const updateRoleData = await connection.query(
+    "UPDATE roles SET salary = ? WHERE id = ?",
+    [roleUpdate.roleSalary]
+  );
+  console.log("Salary has been Updated!");
 
   init();
 }
