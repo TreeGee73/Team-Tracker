@@ -5,7 +5,7 @@ const logo = require("asciiart-logo");
 
 // Variables
 const longText =
-"Employee management that is totally NOT creepy but IS incredibly reliable and secure!";
+  "Employee management that is totally NOT creepy but IS incredibly reliable and secure!";
 
 // Functions to display the logo and start the application
 logoArt();
@@ -220,6 +220,25 @@ async function createRole() {
     role.department,
   ]);
   console.log("New Role Added!");
+
+  init();
+}
+
+// Function to create a new department
+async function createDepartment() {
+  // Request for new department name to be entered by user
+  const newDept = await inquirer.prompt([
+    {
+      name: "department",
+      type: "input",
+      message: "Please enter a new department name.",
+    },
+  ]);
+
+  // Inserts new department into departments table
+  const newDeptQuery = "INSERT INTO departments SET ?";
+  const addRoleData = await connection.query(newDeptQuery, [dept.name]);
+  console.log("New Department Added!");
 
   init();
 }
