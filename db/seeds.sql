@@ -4,38 +4,38 @@ USE tracking_DB;
 INSERT INTO
   gym (gym_name)
 values
-  ("Pewter City"),
-  ("Cerulean City"),
-  ("Vermilion City"),
-  ("Celadon City");
+  ('Pewter City Gym'),
+  ('Cerulean City Gym'),
+  ('Vermilion City Gym'),
+  ('Celadon City Gym');
 
--- Specs Seeds to Start
+-- Types Seeds to Start
 INSERT INTO
-  specs (type_1, type_2, power_lvl)
+  types (title, strength)
 values
-  ("Trainer", null, null),
-  ("Rock", "Ground", 385),
-  ("Rock", "Water", 495),
-  ("Water", "Psychic", 520),
-  ("Normal", "Flying", 405),
-  ("Electric", null, 475),
-  ("Water", "Electric", 460),
-  ("Grass", "Poison", 525),
-  ("Normal", null, 525);
+  ('Trainer', null),
+  ('Rock/Ground', 385),
+  ('Rock/Water', 495),
+  ('Water/Psychic', 520),
+  ('Normal/Flying', 405),
+  ('Electric', 475),
+  ('Water/Electric', 460),
+  ('Grass/Poison', 525),
+  ('Normal', 450);
 
 -- Members Seeds to Start
 INSERT INTO
-  members (mbr_name, gym_id, specs_id, trainer_id)
+  members (first_name, badge_name, types_id, trainer_id, gym_id)
 values
-  ("Brock", 1, 1, null),
-  ("Onix", 1, 2, 1),
-  ("Kabutops", 1, 3, 1),
-  ("Misty", 2, 1, null),
-  ("Starmie", 2, 4, 4),
-  ("Togetic", 2, 5, 4),
-  ("Lt. Surge", 3, 1, null),
-  ("Raichu", 3, 6, 7),
-  ("Lanturn", 3, 7, 7),
-  ("Erika", 4, 1, null),
-  ("Venusaur", 4, 8, 10),
-  ("Chansey", 4, 9, 10);
+  ('Brock', 'Boulder Badge', 1, null, 1),
+  ('Onix', null, 2, 1, null),
+  ('Kabutops', null, 3, 1, null),
+  ('Misty', 'Cascade Badge', 1, null, 2),
+  ('Starmie', null, 4, 4, null),
+  ('Togetic', null, 5, 4, null),
+  ('Lt. Surge', 'Thunder Badge', 1, null, 3),
+  ('Raichu', null, 6, 7, null),
+  ('Lanturn', null, 7, 7, null),
+  ('Erika', 'Rainbow Badge', 1, null, 4),
+  ('Venusaur', null, 8, 10, null),
+  ('Chansey', null, 9, 10, null);
