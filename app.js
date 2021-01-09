@@ -15,9 +15,9 @@ async function init() {
     type: "list",
     message: "Welcome! What do you need to do today?",
     choices: [
-      "View Existing Employees",
-      "View Existing Roles",
-      "View Existing Departments",
+      "View All Trainers & Pokemon",
+      "View All Type & Strength Combinations",
+      "View All Gyms",
       "Add New Employee",
       "Add New Role",
       "Add New Department",
@@ -32,16 +32,16 @@ async function init() {
 
   // Switch case is used to execute the appropriate function based on the users selection
   switch (action) {
-    case "View Existing Employees":
-      viewEmployees();
+    case "View All Trainers & Pokemon":
+      viewMembers();
       break;
 
-    case "View Existing Roles":
-      viewRoles();
+    case "View All Type & Strength Combinations":
+      viewTypes();
       break;
 
-    case "View Existing Departments":
-      viewDepartments();
+    case "View All Gyms":
+      viewGyms();
       break;
 
     case "Add New Employee":
@@ -86,9 +86,9 @@ async function init() {
 }
 
 // A query which returns all data for all employees
-async function viewEmployees() {
-  const employees = await db.viewAllEmployees();
-  console.table(employees);
+async function viewMembers() {
+  const members = await db.viewAllMembers();
+  console.table(members);
   init();
 }
 
@@ -396,7 +396,7 @@ function logoArt() {
       .right("version 1.0.0")
       .emptyLine()
       .center(
-        "Employee management that is totally NOT creepy but IS incredibly reliable and secure!"
+        "Team management that is totally NOT creepy but IS incredibly reliable and secure!"
       )
       .render()
   );

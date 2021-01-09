@@ -4,42 +4,34 @@ class DB {
     constructor(connection) {
         this.connection = connection
     }
-    viewAllEmployees() {
+    viewAllMembers() {
         return this.connection.query(`
         SELECT
-            employees.first_name,
-            employees.last_name,
-            roles.title,
-            roles.salary,
-            department.dept_name,
-            CONCAT(manager.first_name, ' ', manager.last_name) AS Manager
+            members.first_name AS 'Name',
+            members.badge_name AS 'Badge Name',
+            types.title AS 'Type',
+            types.strength AS 'Power Level',
+            gym.gym_name AS 'Gym Name',
+            trainer.first_name AS 'Trainer'
         FROM
-            employees
+            members
         LEFT JOIN
-            roles
+            types
         ON
-            employees.roles_id = roles.id
+            members.types_id = types.id
         LEFT JOIN
-            department
-        ON 
-            roles.department_id = department.id
-        LEFT JOIN
-            employees manager
+            gym
         ON
-            manager.id = employees.manager_id
+            members.gym_id = gym.id
+        LEFT JOIN
+            members trainer
+        ON
+            trainer.id = members.trainer_id
         ORDER BY
-            roles.title,
-            department.dept_name,
-            employees.last_name
+            members.trainer_id,
+            members.first_name,
+            types.title
         `);
-    };
-    addEmployee(employee) {
-        return this.connection.query(`
-        INSERT INTO
-            employees
-        SET
-            ?
-        `, employee);
     };
 }
 
