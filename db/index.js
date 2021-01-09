@@ -62,6 +62,14 @@ class DB {
             ?
         `, member);
     };
+    addType(type) {
+        return this.connection.query(`
+        INSERT INTO
+            types
+        SET
+            ?
+        `, type);
+    };
 }
 
 module.exports = new DB(connection);

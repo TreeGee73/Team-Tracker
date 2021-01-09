@@ -131,8 +131,7 @@ async function createMember() {
     {
       name: "badge_name",
       type: "input",
-      message: "Please enter this member's badge name, if they have one.",
-      default: "null",
+      message: "Please enter this member's badge name, if they have one."
     },
     {
       name: "types_id",
@@ -156,42 +155,25 @@ async function createMember() {
 }
 
 // Function to create a new role
-async function createRole() {
-  // Get list of departments to list for assignment of role to department
-  const deptData = connection.query("SELECT name, id FROM departments");
-
+async function createType() {
   // Request for new role name, salary, and department to be entered by the user
-  const role = await inquirer.prompt([
+  const type = await inquirer.prompt([
     {
-      name: "role",
+      name: "title",
       type: "input",
-      message: "Please enter a new role name.",
+      message: "Please enter a new Type name.",
     },
     {
-      name: "salary",
+      name: "strength",
       type: "input",
-      message: "Please enter the salary for this role.",
-    },
-    {
-      name: "dept",
-      type: "list",
-      message: "Please select a department to assign this role.",
-      choices: deptData,
-      // choices: deptData.map((department) => ({
-      //   name: department.name,
-      //   value: department.id,
-      // })),
+      message: "Please enter the Strength rating for this type if there is one."
     },
   ]);
 
   // Inserts new role into roles table
-  const addRoleData = await connection.query(
-    "INSERT INTO roles (title, salary, department_id) VALUES (?,?,?)",
-    [role.title, role.salary, role.department]
-  );
-  console.log("New Role Added!\n");
-
-  // init();
+  await db.addType(type);
+  console.log("New Type/Strength Combo Added!\n");
+  init();
 }
 
 // Function to create a new department
