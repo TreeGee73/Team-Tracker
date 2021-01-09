@@ -54,6 +54,14 @@ class DB {
             gym.gym_name
         `);
     };
+    addMember(member) {
+        return this.connection.query(`
+        INSERT INTO
+            members
+        SET
+            ?
+        `, member);
+    };
 }
 
 module.exports = new DB(connection);

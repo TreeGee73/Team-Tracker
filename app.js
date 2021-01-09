@@ -114,45 +114,45 @@ async function createMember() {
     name: `${title}`,
     value: id
   }));
-  const employeeList = db.viewAllEmployees();
-  const employeeData = employeeList.map(({ id, first_name, last_name }) => ({
-    name: `${first_name} ${last_name}`,
+  const memberList = db.viewAllMembers();
+  const memberData = memberList.map(({ id, first_name }) => ({
+    name: `${first_name}`,
     value: id
   }));
-  employeeData.unshift({ name: 'None', value: null });
+  memberData.unshift({ name: 'None', value: null });
 
-  // Prompt to user for new employee data
-  const employee = await inquirer.prompt([
+  // Prompt to user for new member data
+  const member = await inquirer.prompt([
     {
       name: "first_name",
       type: "input",
-      message: "Please enter the new employee's first name.",
+      message: "Please enter the new trainer or Pokemon member's name.",
     },
     {
-      name: "last_name",
+      name: "badge_name",
       type: "input",
-      message: "Please enter the new employee's last name.",
+      message: "Please enter this member's badge name, if they have one.",
+      default: "null",
     },
     {
-      name: "role_id",
+      name: "types_id",
       type: "list",
-      message: "Please select the new employee's role.",
-      choices: roleData,
+      message: "Please select this member's type & power combination.",
+      choices: typeData,
     },
     {
-      name: "manager_id",
+      name: "trainer_id",
       type: "list",
-      message: "Please select the new employee's manager.",
-      choices: employeeData,
+      message: "Please select this member's trainer, if they have one.",
+      choices: memberData,
     },
   ]);
   
 
   // Inserts new employee into employee table
-  await db.addEmployee(employee);
+  await db.addMember(member);
   console.log("New Employee Added!\n");
-
-  // init();
+  init();
 }
 
 // Function to create a new role
