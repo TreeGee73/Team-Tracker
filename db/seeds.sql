@@ -1,19 +1,41 @@
-USE employee_db;
+USE tracking_DB;
 
--- Department Seeds to Start
-INSERT INTO departments (dept) values ("Marketing");
-INSERT INTO departments (dept) values ("Sales");
-INSERT INTO departments (dept) values ("Information Technology");
-INSERT INTO departments (dept) values ("Human Resources");
+-- Gym Seeds to Start
+INSERT INTO
+  gym (gym_name)
+values
+  ("Pewter City"),
+  ("Cerulean City"),
+  ("Vermilion City"),
+  ("Celadon City");
 
--- Role Seeds to Start
-INSERT INTO roles (title, salary, dept_id) values ("Marketing Manager", 75000, 1);
-INSERT INTO roles (title, salary, dept_id) values ("Sales Manager", 80000, 2);
-INSERT INTO roles (title, salary, dept_id) values ("Software Engineer", 110000, 3);
-INSERT INTO roles (title, salary, dept_id) values ("HR Generalist", 90000, 4);
+-- Specs Seeds to Start
+INSERT INTO
+  specs (type_1, type_2, power_lvl)
+values
+  ("Trainer", null, null),
+  ("Rock", "Ground", 385),
+  ("Rock", "Water", 495),
+  ("Water", "Psychic", 520),
+  ("Normal", "Flying", 405),
+  ("Electric", null, 475),
+  ("Water", "Electric", 460),
+  ("Grass", "Poison", 525),
+  ("Normal", null, 525);
 
--- Employees Seeds to Start
-INSERT INTO employees (first_name, last_name, roles_id) values ("Megan", "Petrik", 1);
-INSERT INTO employees (first_name, last_name, roles_id) values ("Brian", "Covey", 2);
-INSERT INTO employees (first_name, last_name, roles_id) values ("Theresa", "Grier", 3);
-INSERT INTO employees (first_name, last_name, roles_id) values ("Dave", "Gazzilo", 4);
+-- Members Seeds to Start
+INSERT INTO
+  members (mbr_name, gym_id, specs_id, trainer_id)
+values
+  ("Brock", 1, 1, null),
+  ("Onix", 1, 2, 1),
+  ("Kabutops", 1, 3, 1),
+  ("Misty", 2, 1, null),
+  ("Starmie", 2, 4, 4),
+  ("Togetic", 2, 5, 4),
+  ("Lt. Surge", 3, 1, null),
+  ("Raichu", 3, 6, 7),
+  ("Lanturn", 3, 7, 7),
+  ("Erika", 4, 1, null),
+  ("Venusaur", 4, 8, 10),
+  ("Chansey", 4, 9, 10);
