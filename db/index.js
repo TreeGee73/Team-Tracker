@@ -33,6 +33,17 @@ class DB {
             types.title
         `);
     };
+    viewAllTypes() {
+        return this.connection.query(`
+        SELECT
+            types.title AS 'Type',
+            types.strength AS 'Power Level'
+        FROM
+            types
+        ORDER BY
+            types.strength
+        `);
+    };
 }
 
 module.exports = new DB(connection);

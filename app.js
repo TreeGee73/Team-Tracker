@@ -93,11 +93,10 @@ async function viewMembers() {
 }
 
 // A query which returns all data for all roles
-async function viewRoles() {
-  const roleQuery =
-    "SELECT title AS Title, salary AS Salary, name AS Department FROM roles, INNER JOIN departments, ON roles.department_id = departments.id";
-  const roleData = await connection.query(roleQuery);
-  console.table(roleData);
+async function viewTypes() {
+  const types = await db.viewAllTypes();
+  console.table(types);
+  init();
 }
 
 // A query which returns all data for all departments
