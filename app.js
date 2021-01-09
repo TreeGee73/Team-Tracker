@@ -1,7 +1,7 @@
-const connection = require("./js/connections.js");
+const db = require("./db");
 const inquirer = require("inquirer");
-const mysql = require("mysql");
 const logo = require("asciiart-logo");
+require("console.table");
 
 // Functions to display the logo and start the application
 logoArt();
@@ -34,57 +34,46 @@ async function init() {
   switch (action) {
     case "View Existing Employees":
       viewEmployees();
-      init();
       break;
 
     case "View Existing Roles":
       viewRoles();
-      init();
       break;
 
     case "View Existing Departments":
       viewDepartments();
-      init();
       break;
 
     case "Add New Employee":
       createEmployee();
-      init();
       break;
 
     case "Add New Role":
       createRole();
-      init();
       break;
 
     case "Add New Department":
       createDepartment();
-      init();
       break;
 
     case "Update Employee Role":
       updateEmployee();
-      init();
       break;
 
     case "Update Role Salary":
       updateRole();
-      init();
       break;
 
     case "Remove Employee":
       removeEmployee();
-      init();
       break;
 
     case "Remove Role":
       removeRole();
-      init();
       break;
 
     case "Remove Department":
       removeDepartment();
-      init();
       break;
 
     case "Exit":
@@ -98,10 +87,9 @@ async function init() {
 
 // A query which returns all data for all employees
 async function viewEmployees() {
-  const empQuery =
-    "SELECT employees.first_name, employees.last_name, roles.title, roles.salary, departments.name, IFNULL(CONCAT(manager.first_name, ' ', manager.last_name),'N/A') AS 'Manager' FROM employees LEFT JOIN employees manager ON manager.id = employees.manager_id INNER JOIN roles ON employees.role_id = roles.id INNER JOIN departments ON roles.department_id = departments.id;";
-  const empData = await connection.query(empQuery);
-  console.table(empData);
+  const employees = await db.viewAllEmployees();
+  console.table(employees);
+  init();
 }
 
 // A query which returns all data for all roles
@@ -122,10 +110,17 @@ async function viewDepartments() {
 // Function to create a new employee
 async function createEmployee() {
   // Get a list of roles to list for assignment of employee role
-  const roleData = connection.query("SELECT title, id FROM roles");
-  const employeeData = connection.query(
-    "SELECT id, CONCAT(first_name, ' ', last_name) AS name, id FROM employees"
-  );
+  const roleList = db.viewAllRoles();
+  const roleData = roleList.map(({ id, title }) => ({
+    name: `${title}`,
+    value: id
+  }));
+  const employeeList = db.viewAllEmployees();
+  const employeeData = employeeList.map(({ id, first_name, last_name }) => ({
+    name: `${first_name} ${last_name}`,
+    value: id
+  }));
+  employeeData.unshift({ name: 'None', value: null });
 
   // Prompt to user for new employee data
   const employee = await inquirer.prompt([
@@ -140,41 +135,22 @@ async function createEmployee() {
       message: "Please enter the new employee's last name.",
     },
     {
-      name: "role",
+      name: "role_id",
       type: "list",
       message: "Please select the new employee's role.",
       choices: roleData,
-      // choices: rolesData.map(function (role) {
-      //   return {
-      //     name: role.title,
-      //     value: role.id,
-      //   };
-      // }),
     },
     {
-      name: "manager",
-      type: "list",
-      message: "Does this employee have a manager?",
-      choices: ["Yes", "No"],
-    },
-    {
-      name: "reports",
+      name: "manager_id",
       type: "list",
       message: "Please select the new employee's manager.",
       choices: employeeData,
-      // choices: employeeData.map((emp) => ({
-      //   name: emp.name,
-      //   value: emp.id,
-      // })),
-      when: (answers) => answers.manager === "Yes",
     },
   ]);
+  
 
   // Inserts new employee into employee table
-  const addEmployeeData = await connection.query(
-    "INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)",
-    [employee.first_name, employee.last_name, employee.role, employee.manager]
-  );
+  await db.addEmployee(employee);
   console.log("New Employee Added!\n");
 
   // init();
