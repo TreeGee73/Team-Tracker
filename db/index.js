@@ -44,6 +44,16 @@ class DB {
             types.strength
         `);
     };
+    viewAllGyms() {
+        return this.connection.query(`
+        SELECT
+            gym.gym_name AS 'Gym Name'
+        FROM
+            gym
+        ORDER BY
+            gym.gym_name
+        `);
+    };
 }
 
 module.exports = new DB(connection);

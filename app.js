@@ -18,9 +18,9 @@ async function init() {
       "View All Trainers & Pokemon",
       "View All Type & Strength Combinations",
       "View All Gyms",
-      "Add New Employee",
-      "Add New Role",
-      "Add New Department",
+      "Add New Trainer or Pokemon",
+      "Add New Type / Strength Combination",
+      "Add New Gym",
       "Update Employee Role",
       "Update Role Salary",
       "Remove Employee",
@@ -44,16 +44,16 @@ async function init() {
       viewGyms();
       break;
 
-    case "Add New Employee":
-      createEmployee();
+    case "Add New Trainer or Pokemon":
+      createMember();
       break;
 
-    case "Add New Role":
-      createRole();
+    case "Add New Type / Strength Combination":
+      createType();
       break;
 
-    case "Add New Department":
-      createDepartment();
+    case "Add New Gym":
+      createGym();
       break;
 
     case "Update Employee Role":
@@ -85,32 +85,32 @@ async function init() {
   }
 }
 
-// A query which returns all data for all employees
+// A query which returns all data for all members of the database
 async function viewMembers() {
   const members = await db.viewAllMembers();
   console.table(members);
   init();
 }
 
-// A query which returns all data for all roles
+// A query which returns all data from the types table
 async function viewTypes() {
   const types = await db.viewAllTypes();
   console.table(types);
   init();
 }
 
-// A query which returns all data for all departments
-async function viewDepartments() {
-  const departmentQuery = "SELECT name AS Name FROM departments";
-  const departmentData = await connection.query(departmentQuery);
-  console.table(departmentData);
+// A query which returns all data from the gyms table
+async function viewGyms() {
+  const gyms = await db.viewAllGyms();
+  console.table(gyms);
+  init();
 }
 
-// Function to create a new employee
-async function createEmployee() {
-  // Get a list of roles to list for assignment of employee role
-  const roleList = db.viewAllRoles();
-  const roleData = roleList.map(({ id, title }) => ({
+// Function to create a new member
+async function createMember() {
+  // Get a list of types to list for assignment of member types
+  const typeList = db.viewAllTypes();
+  const typeData = typeList.map(({ id, title }) => ({
     name: `${title}`,
     value: id
   }));
