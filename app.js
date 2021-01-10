@@ -25,7 +25,7 @@ async function init() {
       "Update Trainer or Pokemon Type/Strength Combination",
       "Update Trainer or Pokemon City Gym",
       "Update Trainer or Pokemon Badge",
-      "Update Type Strength Rating",
+      "Update a Type's Strength Rating",
       "Remove Trainer or Pokemon",
       "Remove Type / Strength Combination",
       "Remove Gym",
@@ -71,7 +71,7 @@ async function init() {
       updateMember3();
       break;
 
-    case "Update Type / Strength":
+    case "Update a Type's Strength Rating":
       updateType();
       break;
 
