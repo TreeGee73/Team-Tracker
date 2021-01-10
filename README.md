@@ -41,13 +41,10 @@ The applications are covered under a MIT license.
 ---
 
   ## Images / Demo Video
-  <!-- A video demonstration of this application can be found [here](https://youtu.be/8QQGD-kPY20).
-  Click the image to launch the video. -->
+  A video demonstration of this application can be found [here](https://youtu.be/xMOKVi3SfCU).
+  Click the image to launch the video.
 
-  <!-- [![Screeshot](Screenshot.jpg)](https://www.youtube.com/watch?v=8QQGD-kPY20 "Demo") -->
-
-  TBA <br />
-<img src="Screenshot.jpg" />
+  [![Screeshot](Screenshot.jpg)](https://www.youtube.com/watch?v=xMOKVi3SfCU "Demo")
 
 ---
 
