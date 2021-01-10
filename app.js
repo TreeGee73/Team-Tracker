@@ -1,6 +1,7 @@
 const db = require("./db");
 const inquirer = require("inquirer");
 const logo = require("asciiart-logo");
+const { connection } = require("./db");
 require("console.table");
 
 // Functions to display the logo and start the application
@@ -21,11 +22,11 @@ async function init() {
       "Add New Trainer or Pokemon",
       "Add New Type / Strength Combination",
       "Add New Gym",
-      "Update Employee Role",
-      "Update Role Salary",
-      "Remove Employee",
-      "Remove Role",
-      "Remove Department",
+      "Update Trainer or Pokemon",
+      "Update Type / Strength",
+      "Remove Trainer or Pokemon",
+      "Remove Type / Strength Combination",
+      "Remove Gym",
       "Exit",
     ],
   });
@@ -56,24 +57,24 @@ async function init() {
       createGym();
       break;
 
-    case "Update Employee Role":
-      updateEmployee();
+    case "Update Trainer or Pokemon":
+      updateMember();
       break;
 
-    case "Update Role Salary":
-      updateRole();
+    case "Update Type / Strength":
+      updateType();
       break;
 
-    case "Remove Employee":
-      removeEmployee();
+    case "Remove Trainer or Pokemon":
+      removeMember();
       break;
 
-    case "Remove Role":
-      removeRole();
+    case "Remove Type / Strength Combination":
+      removeType();
       break;
 
-    case "Remove Department":
-      removeDepartment();
+    case "Remove Gym":
+      removeGym();
       break;
 
     case "Exit":
@@ -108,13 +109,21 @@ async function viewGyms() {
 
 // Function to create a new member
 async function createMember() {
-  // Get a list of types to list for assignment of member types
-  const typeList = db.viewAllTypes();
+  // A query which returns the types from the types table for user selection
+  const typeList = await connection.query('SELECT title, id FROM types');
   const typeData = typeList.map(({ id, title }) => ({
     name: `${title}`,
     value: id
   }));
-  const memberList = db.viewAllMembers();
+  // A query which returns the gyms from the gym table for user selection
+  const gymList = await connection.query('SELECT gym_name, id FROM gym');
+  const gymData = gymList.map(({ id, gym_name }) => ({
+    name: `${gym_name}`,
+    value: id
+  }));
+  gymData.unshift({ name: 'None', value: null });
+  // A query which returns the trainer names from the member table for user selection
+  const memberList = await connection.query('SELECT first_name, id FROM members');
   const memberData = memberList.map(({ id, first_name }) => ({
     name: `${first_name}`,
     value: id
@@ -131,13 +140,20 @@ async function createMember() {
     {
       name: "badge_name",
       type: "input",
-      message: "Please enter this member's badge name, if they have one."
+      message: "Please enter this member's badge name, if they have one.",
+      default: null
     },
     {
       name: "types_id",
       type: "list",
       message: "Please select this member's type & power combination.",
       choices: typeData,
+    },
+    {
+      name: "gym_id",
+      type: "list",
+      message: "Please select this member's Gym.",
+      choices: gymData,
     },
     {
       name: "trainer_id",
@@ -148,15 +164,15 @@ async function createMember() {
   ]);
   
 
-  // Inserts new employee into employee table
+  // Inserts new member into the member table
   await db.addMember(member);
-  console.log("New Employee Added!\n");
+  console.log("New Member Added!\n");
   init();
 }
 
-// Function to create a new role
+// Function to create a new type
 async function createType() {
-  // Request for new role name, salary, and department to be entered by the user
+  // Request for new type data to be entered by the user
   const type = await inquirer.prompt([
     {
       name: "title",
@@ -170,192 +186,176 @@ async function createType() {
     },
   ]);
 
-  // Inserts new role into roles table
+  // Inserts new type into types table
   await db.addType(type);
   console.log("New Type/Strength Combo Added!\n");
   init();
 }
 
-// Function to create a new department
-async function createDepartment() {
-  // Request for new department name to be entered by user
-  const department = await inquirer.prompt([
+// Function to create a new gym
+async function createGym() {
+  // Request for new gym name to be entered by user
+  const gym = await inquirer.prompt([
     {
-      name: "department",
+      name: "gym_name",
       type: "input",
-      message: "Please enter a new department name.",
+      message: "Please enter a new City Gym name.",
     },
   ]);
 
-  // Inserts new department into departments table
-  const addRoleData = await connection.query("INSERT INTO departments SET ?", [
-    department.name,
-  ]);
-  console.log("New Department Added!\n");
-
-  // init();
+  // Inserts new gym into gym table
+  await db.addGym(gym);
+  console.log("New City Gym Added!\n");
+  init();
 }
 
-// function to update an employee
-async function updateEmployee() {
-  // Queries to pull in role and employee table data
-  const getRoles = await connection.query("SELECT title, id FROM roles");
-  const getEmployees = await connection.query(
-    "SELECT CONCAT(first_name, ' ', last_name) AS name, id FROM employees"
-  );
+// function to update an member
+async function updateMember() {
+  // A query which returns the trainer names from the member table for user selection
+  const memberList = await connection.query('SELECT first_name, id FROM members');
+  // const memberList = await db.viewAllMembers();
+  const memberData = memberList.map(({ id, first_name }) => ({
+    name: `${first_name}`,
+    value: id
+  }));
+  
+  // Prompts for member to update
+  const { memberId } = await inquirer.prompt([
+    {
+      name: "first_name",
+      type: "list",
+      message: "Which Trainer or Pokemon would you like to modify?",
+      choices: memberData,
+    }
+  ]);
 
-  // Prompts for employee to update
-  const empUpdate = await inquirer.prompt([
+  // A query which returns the types from the types table for user selection
+  const typeList = await connection.query('SELECT title, id FROM types');
+  // const typeList = await db.viewAllTypes();
+  const typeData = typeList.map(({ id, title }) => ({
+    name: `${title}`,
+    value: id
+  }));
+    const { typeId } = await inquirer.prompt([
     {
-      name: "empName",
+      name: "types_id",
       type: "list",
-      message: "Which employee would you like to modify?",
-      choices: getEmployees,
-      // choices: getEmployees.map((employee) => ({
-      //   name: employee.name,
-      //   value: employee.id,
-      // })),
-    },
-    {
-      name: "empRole",
-      type: "list",
-      message: "What is this employee's new role?",
-      choices: getRoles,
-      // choices: getRoles.map((role) => ({
-      //   name: role.title,
-      //   value: role.id,
-      // })),
+      message: "Please select this member's type & power combination.",
+      choices: typeData,
     },
   ]);
 
-  // Updates employee's new role
-  const updateEmployeeData = await connection.query(
-    "UPDATE employees SET role_id = ? WHERE id = ?",
-    [empUpdate.empRole, empUpdate.empName]
-  );
-  console.log("Employee has been Updated!\n");
-
-  // init();
+  // Updates members's new information
+  await db.updateMembers(memberId, typeId);
+  console.log("Trainer/Pokemon has been Updated!\n");
+  init();
 }
 
-// function to update an role
-async function updateRole() {
+// function to update an Type
+async function updateType() {
   // Queries to pull in role and employee table data
-  const existingRoles = await connection.query("SELECT title, id FROM roles");
+  const typeList = await connection.query('SELECT title, id FROM types');
+  // const typeList = await db.viewAllTypes();
+  const typeData = typeList.map(({ id, title }) => ({
+    name: `${title}`,
+    value: id
+  }));
 
-  // Prompts for role to update
-  const roleUpdate = await inquirer.prompt([
+  // Prompts for type to update
+  const { typeUpdate } = await inquirer.prompt([
     {
-      name: "roleName",
+      name: "title",
       type: "list",
       message: "Which role would you like to modify?",
-      choices: existingRoles,
-      // choices: existingRoles.map((role) => ({
-      //   name: role.title,
-      //   value: role.id,
-      // })),
+      choices: typeData,
+      
     },
     {
-      name: "roleSalary",
+      name: "strength",
       type: "input",
-      message: "What is this role's new salary?",
+      message: "What is this type's new Strength?",
     },
   ]);
 
   // Updates role's salary
-  const updateRoleData = await connection.query(
-    "UPDATE roles SET salary = ? WHERE id = ?",
-    [roleUpdate.roleSalary]
-  );
-  console.log("Salary has been Updated!\n");
-
-  // init();
+  await db.updateTypes(typeUpdate);
+  console.log("Strength has been Updated!\n");
+  init();
 }
 
-// Function to remove an Employee
-async function removeEmployee() {
-  // Query to pull list of all employees on the employee table
-  const employeeList = await connection.query(
-    "SELECT CONCAT(first_name, ' ', last_name) AS name, id FROM employees"
-  );
+// Function to remove a Trainer or Pokemon
+async function removeMember() {
+  // A query which returns the trainer and Pokemon names from the member table for user selection
+  const memberList = await connection.query('SELECT first_name, id FROM members');
+  // const memberList = await db.viewAllMembers();
+  const memberData = memberList.map(({ id, first_name }) => ({
+    name: `${first_name}`,
+    value: id
+  }));
 
-  // Prompt to user to select which employee to remove
-  const empRemove = await inquirer.prompt([
+  // Prompt to user to select which trainer or Pokemon to remove
+  const memberName = await inquirer.prompt([
     {
-      name: "empToRemove",
+      name: "first_name",
       type: "list",
       message: "Which employee would you like to remove?",
-      choices: employeeList,
-      // choices: employeeList.map((employee) => ({
-      //   name: employee.name,
-      //   value: employee.id,
-      // })),
+      choices: memberData,
     },
   ]);
 
-  // Removes selected employee
-  const removeEmployeeData = await connection.query(
-    "DELETE FROM employees WHERE id = ?"
-  );
-  console.log("Employee has been Deleted!\n");
-
-  // init();
+  // Removes selected Trainer or Pokemon
+  await db.removeMembers(memberName);
+  console.log("Trainer or Pokemon has been Deleted!\n");
+  init();
 }
 
-// Function to remove an Role
-async function removeRole() {
-  // Query to pull list of all roles on the role table
-  const roleList = await connection.query("SELECT title, id FROM roles");
+// Function to remove an Type
+async function removeType() {
+  // A query which returns the types from the types table for user selection
+  const typeList = await connection.query('SELECT title, id FROM types');
+  const typeData = typeList.map(({ id, title }) => ({
+    name: `${title}`,
+    value: id
+  }));
 
-  // Prompt to user to select which role to remove
-  const roleRemove = await inquirer.prompt([
+  // Prompt to user to select which type to remove
+  const typeName = await inquirer.prompt([
     {
-      name: "roleToRemove",
+      name: "title",
       type: "list",
-      message: "Which role would you like to remove?",
-      choices: roleList,
-      // choices: roleList.map((role) => ({
-      //   name: role.title,
-      //   value: role.id,
-      // })),
+      message: "Which Type/Strength Combo would you like to remove?",
+      choices: typeData,
     },
   ]);
 
-  // Removes selected role
-  const removeRoleData = await connection.query(
-    "DELETE FROM roles WHERE id = ?"
-  );
-  console.log("Role has been Deleted!\n");
-
-  // init();
+  // Removes selected Type/Strength Combo
+await db.removeTypes(typeName);
+  console.log("Type/Strength Combo has been Deleted!\n");
+  init();
 }
 
 // Function to remove an Department
-async function removeDepartment() {
-  // Query to pull list of all departments on the departments table
-  const departmentsList = await connection.query(
-    "SELECT name, id FROM departments"
-  );
+async function removeGym() {
+  // A query which returns the City Gyms from the Gym table for user selection
+  const gymList = await connection.query('SELECT gym_name, id FROM gym');
+  const gymData = gymList.map(({ id, gym_name }) => ({
+    name: `${gym_name}`,
+    value: id
+  }));
 
-  // Prompt to user to select which role to remove
-  const departmentRemove = await inquirer.prompt([
+  // Prompt to user to select which City Gym to remove
+  const gymName = await inquirer.prompt([
     {
-      name: "deptToRemove",
+      name: "gym_name",
       type: "list",
-      message: "Which department would you like to remove?",
-      choices: departmentsList,
-      // choices: departmentsList.map((dept) => ({
-      //   name: dept.name,
-      //   value: dept.id,
-      // })),
+      message: "Which City Gym would you like to remove?",
+      choices: gymData,
     },
   ]);
 
-  // Removes selected department
-  const removeDepartmentData = await connection.query(
-    "DELETE FROM departments WHERE id = ?"
-  );
-  console.log("Department has been Deleted!\n");
+  // Removes selected City Gym
+  await db.removeGyms(gymName);
+  console.log("City Gym has been Deleted!\n");
 
   // init();
 }

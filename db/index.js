@@ -32,7 +32,7 @@ class DB {
             members.first_name,
             types.title
         `);
-    };
+    }
     viewAllTypes() {
         return this.connection.query(`
         SELECT
@@ -43,7 +43,7 @@ class DB {
         ORDER BY
             types.strength
         `);
-    };
+    }
     viewAllGyms() {
         return this.connection.query(`
         SELECT
@@ -53,7 +53,7 @@ class DB {
         ORDER BY
             gym.gym_name
         `);
-    };
+    }
     addMember(member) {
         return this.connection.query(`
         INSERT INTO
@@ -61,7 +61,7 @@ class DB {
         SET
             ?
         `, member);
-    };
+    }
     addType(type) {
         return this.connection.query(`
         INSERT INTO
@@ -69,7 +69,30 @@ class DB {
         SET
             ?
         `, type);
-    };
+    }
+    addGym(gym) {
+        return this.connection.query(`
+        INSERT INTO
+            gym
+        SET
+            ?
+        `, gym);
+    }
+    updateMembers(memberId, typeId) {
+        return this.connection.query(`UPDATE members SET types_id = ? WHERE id = ?`, [typeId, memberId]);
+    }
+    updateTypes(typeName) {
+        return this.connection.query(`UPDATE types SET strength = ? WHERE id = ?`, typeName);
+    }
+    removeMembers(memberName) {
+        return this.connection.query(`DELETE FROM members WHERE id = ?`, memberName);
+    }
+    removeTypes(typeName) {
+        return this.connection.query(`DELETE FROM types WHERE id = ?`, typeName);
+    }
+    removeGyms(gymName) {
+        return this.connection.query(`DELETE FROM gym WHERE id = ?`, gymName);
+    }
 }
 
 module.exports = new DB(connection);

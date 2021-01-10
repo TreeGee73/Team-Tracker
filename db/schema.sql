@@ -16,7 +16,7 @@ CREATE TABLE gym (
 CREATE TABLE types (
   id INT PRIMARY KEY AUTO_INCREMENT,
   title VARCHAR(50) NULL,
-  strength INT NULL
+  strength VARCHAR(50) NULL
 );
 
 -- Creates the Members table
@@ -24,7 +24,7 @@ CREATE TABLE members (
   id INT PRIMARY KEY AUTO_INCREMENT,
   first_name VARCHAR(20) NULL,
   badge_name VARCHAR(20) NULL,
-  types_id INT NOT NULL REFERENCES types.id,
+  types_id INT NULL REFERENCES types.id,
   gym_id INT NULL REFERENCES gym.id,
   trainer_id INT NULL REFERENCES members.id,
   FOREIGN KEY (types_id) REFERENCES types(id) ON DELETE CASCADE,
@@ -36,6 +36,7 @@ CREATE TABLE members (
 INSERT INTO
   gym (gym_name)
 values
+  ('N/A'),
   ('Pewter City Gym'),
   ('Cerulean City Gym'),
   ('Vermilion City Gym'),
@@ -45,7 +46,7 @@ values
 INSERT INTO
   types (title, strength)
 values
-  ('Trainer', null),
+  ('Trainer', ''),
   ('Rock/Ground', 385),
   ('Rock/Water', 495),
   ('Water/Psychic', 520),
@@ -59,15 +60,15 @@ values
 INSERT INTO
   members (first_name, badge_name, types_id, trainer_id, gym_id)
 values
-  ('Brock', 'Boulder Badge', 1, null, 1),
-  ('Onix', null, 2, 1, null),
-  ('Kabutops', null, 3, 1, null),
-  ('Misty', 'Cascade Badge', 1, null, 2),
-  ('Starmie', null, 4, 4, null),
-  ('Togetic', null, 5, 4, null),
-  ('Lt. Surge', 'Thunder Badge', 1, null, 3),
-  ('Raichu', null, 6, 7, null),
-  ('Lanturn', null, 7, 7, null),
-  ('Erika', 'Rainbow Badge', 1, null, 4),
-  ('Venusaur', null, 8, 10, null),
-  ('Chansey', null, 9, 10, null);
+  ('Brock', 'Boulder Badge', 1, null, 2),
+  ('Onix', 'N/A', 2, 1, 1),
+  ('Kabutops', 'N/A', 3, 1, 1),
+  ('Misty', 'Cascade Badge', 1, null, 3),
+  ('Starmie', 'N/A', 4, 4, 1),
+  ('Togetic', 'N/A', 5, 4, 1),
+  ('Lt. Surge', 'Thunder Badge', 1, null, 4),
+  ('Raichu', 'N/A', 6, 7, 1),
+  ('Lanturn', 'N/A', 7, 7, 1),
+  ('Erika', 'Rainbow Badge', 1, null, 5),
+  ('Venusaur', 'N/A', 8, 10, 1),
+  ('Chansey', 'N/A', 9, 10, 1);
