@@ -84,15 +84,15 @@ class DB {
     // updateTypes(typeUpdate) {
     //     return this.connection.query(`UPDATE types SET strength = ? WHERE id = ?`, typeUpdate);
     // }
-    removeMembers(memberName) {
-        return this.connection.query(`DELETE FROM members WHERE id = ?`, memberName);
-    }
-    removeTypes(typeName) {
-        return this.connection.query(`DELETE FROM types WHERE id = ?`, typeName);
-    }
-    removeGyms(gymName) {
-        return this.connection.query(`DELETE FROM gym WHERE id = ?`, gymName);
-    }
+    // removeMembers(memberName) {
+    //     return this.connection.query(`DELETE FROM members WHERE id = ?`, memberName);
+    // }
+    // removeTypes(typeName) {
+    //     return this.connection.query(`DELETE FROM types WHERE id = ?`, typeName);
+    // }
+    // removeGyms(gymName) {
+    //     return this.connection.query(`DELETE FROM gym WHERE id = ?`, gymName);
+    // }
 }
 
 module.exports = new DB(connection);
