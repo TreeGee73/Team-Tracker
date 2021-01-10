@@ -22,8 +22,10 @@ async function init() {
       "Add New Trainer or Pokemon",
       "Add New Type / Strength Combination",
       "Add New Gym",
-      "Update Trainer or Pokemon",
-      "Update Type / Strength",
+      "Update Trainer or Pokemon Type/Strength Combination",
+      "Update Trainer or Pokemon City Gym",
+      "Update Trainer or Pokemon Badge",
+      "Update Type Strength Rating",
       "Remove Trainer or Pokemon",
       "Remove Type / Strength Combination",
       "Remove Gym",
@@ -57,8 +59,16 @@ async function init() {
       createGym();
       break;
 
-    case "Update Trainer or Pokemon":
-      updateMember();
+    case "Update Trainer or Pokemon Type/Strength Combination":
+      updateMember1();
+      break;
+
+    case "Update Trainer or Pokemon City Gym":
+      updateMember2();
+      break;
+
+    case "Update Trainer or Pokemon Badge":
+      updateMember3();
       break;
 
     case "Update Type / Strength":
@@ -209,8 +219,92 @@ async function createGym() {
   init();
 }
 
-// function to update an member
-async function updateMember() {
+// function to update a Trainer or Pokemon's Type Info
+async function updateMember1() {
+  // A query which returns the trainer names from the member table for user selection
+  const memberList = await connection.query('SELECT first_name, id FROM members');
+  // const memberList = await db.viewAllMembers();
+  const memberData = memberList.map(({ id, first_name }) => ({
+    name: `${first_name}`,
+    value: id
+  }));
+  
+    // A query which returns the types from the types table for user selection
+    const typeList = await connection.query('SELECT title, id FROM types');
+    // const typeList = await db.viewAllTypes();
+    const typeData = typeList.map(({ id, title }) => ({
+      name: `${title}`,
+      value: id
+    }));
+  
+  // Prompts for member to update
+  const memberName = await inquirer.prompt([
+    {
+      name: "first_name",
+      type: "list",
+      message: "Which Trainer or Pokemon's Type/Strength Combo would you like to modify?",
+      choices: memberData,
+    },
+    {
+      name: "types_id",
+      type: "list",
+      message: "Please select this member's new type & power combination.",
+      choices: typeData,
+    },
+  ]);
+
+  // Updates members's new information
+  // await db.updateMembers(memberName);
+  const memberUpdate = "UPDATE members SET types_id = ? WHERE id = ?";
+  await connection.query(memberUpdate, [memberName.types_id, memberName.first_name]);
+  console.log("Trainer/Pokemon Type/Strength Combo has been Updated!\n");
+  init();
+}
+
+// function to update a Trainer or Pokemon's Gym Info
+async function updateMember2() {
+  // A query which returns the trainer names from the member table for user selection
+  const memberList = await connection.query('SELECT first_name, id FROM members');
+  // const memberList = await db.viewAllMembers();
+  const memberData = memberList.map(({ id, first_name }) => ({
+    name: `${first_name}`,
+    value: id
+  }));
+  
+  // A query which returns the City Gyms from the gym table for user selection
+  const gymList = await connection.query('SELECT gym_name, id FROM gym');
+  // const typeList = await db.viewAllTypes();
+  const gymData = gymList.map(({ id, gym_name }) => ({
+    name: `${gym_name}`,
+    value: id
+  }));
+  
+  // Prompts for member to update
+  const memberGym = await inquirer.prompt([
+    {
+      name: "first_name",
+      type: "list",
+      message: "Which Trainer or Pokemon' City Gym would you like to modify?",
+      choices: memberData,
+    },
+    {
+      name: "gym_id",
+      type: "list",
+      message: "Please select this member's new gym.",
+      choices: gymData,
+    },
+  ]);
+
+  // Updates members's new information
+  // await db.updateMembers(memberName);
+  const memberUpdate = "UPDATE members SET gym_id = ? WHERE id = ?";
+  await connection.query(memberUpdate, [memberGym.gym_id, memberGym.first_name]);
+  console.log("Trainer/Pokemon City Gym has been Updated!\n");
+  init();
+}
+
+// function to update a Trainer or Pokemon's Gym Info
+async function updateMember3() {
   // A query which returns the trainer names from the member table for user selection
   const memberList = await connection.query('SELECT first_name, id FROM members');
   // const memberList = await db.viewAllMembers();
@@ -220,34 +314,25 @@ async function updateMember() {
   }));
   
   // Prompts for member to update
-  const { memberId } = await inquirer.prompt([
+  const memberGym = await inquirer.prompt([
     {
       name: "first_name",
       type: "list",
-      message: "Which Trainer or Pokemon would you like to modify?",
+      message: "Which Trainer or Pokemon's Badge would you like to modify?",
       choices: memberData,
-    }
-  ]);
-
-  // A query which returns the types from the types table for user selection
-  const typeList = await connection.query('SELECT title, id FROM types');
-  // const typeList = await db.viewAllTypes();
-  const typeData = typeList.map(({ id, title }) => ({
-    name: `${title}`,
-    value: id
-  }));
-    const { typeId } = await inquirer.prompt([
+    },
     {
-      name: "types_id",
-      type: "list",
-      message: "Please select this member's type & power combination.",
-      choices: typeData,
+      name: "badge_name",
+      type: "input",
+      message: "Please enter this member's new Badge.",
     },
   ]);
 
   // Updates members's new information
-  await db.updateMembers(memberId, typeId);
-  console.log("Trainer/Pokemon has been Updated!\n");
+  // await db.updateMembers(memberName);
+  const memberUpdate = "UPDATE members SET badge_name = ? WHERE id = ?";
+  await connection.query(memberUpdate, [memberGym.badge_name, memberGym.first_name]);
+  console.log("Trainer/Pokemon Badge has been Updated!\n");
   init();
 }
 
@@ -262,7 +347,7 @@ async function updateType() {
   }));
 
   // Prompts for type to update
-  const { typeUpdate } = await inquirer.prompt([
+  const typeName= await inquirer.prompt([
     {
       name: "title",
       type: "list",
@@ -277,8 +362,10 @@ async function updateType() {
     },
   ]);
 
-  // Updates role's salary
-  await db.updateTypes(typeUpdate);
+  // Updates type's strength
+  // await db.updateTypes(typeUpdate);
+  const typeUpdate = "UPDATE types SET strength = ? WHERE id =?";
+  await connection.query(typeUpdate, [typeName.strength, typeName.title]);
   console.log("Strength has been Updated!\n");
   init();
 }
@@ -304,8 +391,10 @@ async function removeMember() {
   ]);
 
   // Removes selected Trainer or Pokemon
-  await db.removeMembers(memberName);
-  console.log("Trainer or Pokemon has been Deleted!\n");
+  // await db.removeMembers(memberName);
+  const memberRemoved = "DELETE FROM members WHERE id = ?";
+  await connection.query(memberRemoved, [memberName.first_name]);
+  console.log("That Trainer or Pokemon has been Deleted!\n");
   init();
 }
 
@@ -329,8 +418,10 @@ async function removeType() {
   ]);
 
   // Removes selected Type/Strength Combo
-await db.removeTypes(typeName);
-  console.log("Type/Strength Combo has been Deleted!\n");
+// await db.removeTypes(typeName);
+  const typeRemoved = "DELETE FROM types WHERE id = ?";
+  await connection.query(typeRemoved, [typeName.title]);
+  console.log("That Type/Strength Combo has been Deleted!\n");
   init();
 }
 
@@ -354,10 +445,11 @@ async function removeGym() {
   ]);
 
   // Removes selected City Gym
-  await db.removeGyms(gymName);
+  // await db.removeGyms(gymName);
+  const gymRemoved = "DELETE FROM gym WHERE id = ?";
+  await connection.query(gymRemoved, [gymName.gym_name]);
   console.log("City Gym has been Deleted!\n");
-
-  // init();
+  init();
 }
 
 // Function to create opening logo

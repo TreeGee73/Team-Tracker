@@ -78,12 +78,12 @@ class DB {
             ?
         `, gym);
     }
-    updateMembers(memberId, typeId) {
-        return this.connection.query(`UPDATE members SET types_id = ? WHERE id = ?`, [typeId, memberId]);
-    }
-    updateTypes(typeName) {
-        return this.connection.query(`UPDATE types SET strength = ? WHERE id = ?`, typeName);
-    }
+    // updateMembers(memberName) {
+    //     return this.connection.query(`UPDATE members SET types_id = ? WHERE id = ?`, memberName);
+    // }
+    // updateTypes(typeUpdate) {
+    //     return this.connection.query(`UPDATE types SET strength = ? WHERE id = ?`, typeUpdate);
+    // }
     removeMembers(memberName) {
         return this.connection.query(`DELETE FROM members WHERE id = ?`, memberName);
     }

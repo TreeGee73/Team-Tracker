@@ -1,4 +1,4 @@
-# Employee Tracker
+# Team Tracker
 ![License](https://img.shields.io/badge/License-MIT-blue)
 
 ## Table of Contents
@@ -14,12 +14,12 @@
 ---
 
   ## Description
-Developers are often tasked with creating interfaces that make it easy for non-developers to view and interact with information stored in databases.
+Developers are often tasked with creating interfaces that make it easy for non-developers to view and interact with information stored in databases. This Pokemon themed team tracker handles the managment of team members and associate data using node, inquirer, and MySQL.
 
 ---
 
   ## Usage
-CLI content management solution for managing a company's employees using node, inquirer, and MySQL.
+CLI content management solution for managing a company's employees using node, inquirer, and MySQL. Since this it Pokemon themed, the three tables used in the database are Gym (which contains the City Gyms trainers are from and equates to a "departments" table), Types (which contains the Trainer or Pokemon's "Type" and Strength information, it equates to a "roles" table), and Members (which contains the names of the Trainers and Pokemon, along with additional information relevant to each "member", it uses references from the Gym & Types tables and equates to the "employees" table).
 
 ---
 
@@ -27,13 +27,11 @@ CLI content management solution for managing a company's employees using node, i
 This app utilizes the following technologies:
  - [npm](https://www.npmjs.com/)
  - [NodeJS](https://nodejs.org/)
- - [MySQL](https://www.mysql.com/)
- - [Heroku](https://www.heroku.com/)
 
 ---
 
   ## Installation
-Simply use npm i to install. Node app.js to run.
+Simply use npm i to install. Node app.js is the command to run.
 
 ---
 
