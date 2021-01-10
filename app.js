@@ -150,8 +150,7 @@ async function createMember() {
     {
       name: "badge_name",
       type: "input",
-      message: "Please enter this member's badge name, if they have one.",
-      default: null
+      message: "Please enter this member's badge name, if they have one."
     },
     {
       name: "types_id",
